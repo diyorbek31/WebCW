@@ -1,78 +1,68 @@
-import { readFileCustom } from "../helpers/read-helper.js"
-import { writeFileCustom } from "../helpers/write-helper.js"
+import { readFileCustom } from "../helpers/read-helper.js";
+import { writeFileCustom } from "../helpers/write-helper.js";
 
 export default {
     MAIN_PAGE: (_, res) => {
-        const allGroups = readFileCustom('groups.json')
-        res.render('main.ejs', { allGroups })
+        const allBooks = readFileCustom("books.json");
+        res.render("main.ejs", { allBooks });
     },
-    CREATE_GROUPS: (req, res) => {
-        const { group_name, group_size } = req.body
 
-        const allGroups = readFileCustom('groups.json')
+    CREATE_BOOK: (req, res) => {
+        const { title, author, genre } = req.body;
+        console.log("📥 Incoming Data:", req.body);
 
-        if (allGroups.find(group => group.group_name == group_name)) {
-            return res.status(400).json({
-                message: "Group already exists"
-            })
-        } else {
-            allGroups.push({
-                id: allGroups.at(-1)?.id + 1 || 1,
-                group_name,
-                group_size
-            })
-
-            writeFileCustom('groups.json', allGroups)
-
-            res.redirect('/api/main')
-        }
-    },
-    UPDATE_GROUP: (req, res) => {
-        const { id } = req.params
-        const { group_name, group_size } = req.body
-
-        if (!group_name || !group_size) {
-            return res.status(400).json({ message: "Group name and size are required" });
+        if (!title || !author || !genre) {
+            return res.status(400).json({ message: "All book fields are required" });
         }
 
-        const allGroups = readFileCustom('groups.json')
+        const allBooks = readFileCustom("books.json");
 
-        const groupIndex = allGroups.findIndex(group => group.id == +id)
-
-        if (groupIndex == -1) {
-            return res.status(404).json({
-                message: "Group not found"
-            })
+        if (allBooks.find((book) => book.title === title)) {
+            return res.status(400).json({ message: "Book already exists" });
         } else {
-            allGroups[groupIndex] = {
-                id: +id,
-                group_name,
-                group_size
-            }
+            allBooks.push({
+                id: allBooks.at(-1)?.id + 1 || 1,
+                title,
+                author,
+                genre
+            });
 
-            writeFileCustom('groups.json', allGroups)
-
-            res.redirect('/api/main');
+            writeFileCustom("books.json", allBooks);
+            res.redirect("/api/main");
         }
     },
 
-    DELETE_GROUP: (req, res) => {
-        const { id } = req.params
+    UPDATE_BOOK: (req, res) => {
+        const { id } = req.params;
+        const { title, author, genre } = req.body;
 
-        const allGroups = readFileCustom('groups.json')
+        if (!title || !author || !genre) {
+            return res.status(400).json({ message: "All book fields are required" });
+        }
 
-        const groupIndex = allGroups.findIndex(group => group.id == id)
+        const allBooks = readFileCustom("books.json");
+        const bookIndex = allBooks.findIndex((book) => book.id == +id);
 
-        if (groupIndex == -1) {
-            return res.status(404).json({
-                message: "Group not found"
-            })
+        if (bookIndex === -1) {
+            return res.status(404).json({ message: "Book not found" });
         } else {
-            allGroups.splice(groupIndex, 1)
+            allBooks[bookIndex] = { id: +id, title, author, genre };
+            writeFileCustom("books.json", allBooks);
+            res.redirect("/api/main");
+        }
+    },
 
-            writeFileCustom('groups.json', allGroups)
+    DELETE_BOOK: (req, res) => {
+        const { id } = req.params;
+        const allBooks = readFileCustom("books.json");
+        const bookIndex = allBooks.findIndex((book) => book.id == id);
 
-            res.redirect('/api/main')
+        if (bookIndex === -1) {
+            return res.status(404).json({ message: "Book not found" });
+        } else {
+            allBooks.splice(bookIndex, 1);
+            writeFileCustom("books.json", allBooks);
+            res.redirect("/api/main");
         }
     }
-}
+};

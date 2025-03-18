@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "title": "Who will cry, when you die?",
+        "author": "Robin Sharma",
+        "genre": "Motivational"
+    },
+    {
+        "id": 2,
+        "title": "Animal Farm",
+        "author": "George Orwell",
+        "genre": "Political"
+    }
+]
