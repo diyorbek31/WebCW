@@ -21,7 +21,6 @@ body {
     overflow-x: hidden;
 }
 
-
 /* 🌟 Header */
 header {
     position: absolute;
@@ -115,6 +114,17 @@ section > div > div {
     border-bottom: 1px solid #ccc;
 }
 
+/* 🌟 Edit & Delete Buttons */
+.edit-button, .delete-button {
+    margin-right: 10px;
+}
+
+/* Ensures buttons are spaced properly */
+.button-container {
+    display: flex;
+    gap: 10px; /* Adds space between buttons */
+}
+
 /* 🌟 Responsive Design */
 @media (max-width: 768px) {
     body {
@@ -132,5 +142,10 @@ section > div > div {
         max-width: 90vw;
         padding: 0;
         height: auto;
+    }
+
+    .button-container {
+        flex-direction: column;
+        gap: 5px; /* Less space for mobile view */
     }
 }

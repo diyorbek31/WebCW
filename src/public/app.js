@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const booksContainer = document.querySelector('.books');
 
-    // Event Delegation for Edit & Save Buttons
+    // Event Delegation for Edit, Save, and Delete Buttons
     booksContainer.addEventListener('click', (event) => {
         const button = event.target;
         const bookItem = button.closest('.single_book');
@@ -50,20 +50,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const book_author = authorInput.value.trim();
         const book_genre = genreInput.value.trim();
 
-        // Check if inputs are empty
+        // Validation: Check if fields are empty
         if (!book_title || !book_author || !book_genre) {
-            alert("Fields cannot be empty!");
+            alert("All fields are required!");
             return;
         }
 
+        // Validation: Limit input length
+        if (book_title.length > 100 || book_author.length > 100 || book_genre.length > 100) {
+            alert("Each field must be under 100 characters.");
+            return;
+        }
+
+        // Validation: Ensure author name only contains letters and spaces
+        const nameRegex = /^[A-Za-z\s]+$/;
+        if (!nameRegex.test(book_author)) {
+            alert("Author name can only contain letters and spaces.");
+            return;
+        }
+
+        // Send data to backend
         fetch(`/api/books/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ book_title, book_author, book_genre })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to update book.");
+            return response.json();
+        })
         .then(data => {
-            // Update UI
+            // Update UI with new values
             titleP.textContent = book_title;
             authorP.textContent = book_author;
             genreP.textContent = book_genre;
@@ -78,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             editButton.style.display = 'inline-block';
             saveButton.style.display = 'none';
         })
-        .catch(error => console.error("Error updating book:", error));
+        .catch(error => alert(`Error updating book: ${error.message}`));
     }
 
     function handleDelete(bookItem) {
@@ -88,12 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(`/api/books/${id}`, { method: 'DELETE' })
         .then(response => {
-            if (response.ok) {
-                bookItem.remove();
-            } else {
-                console.error("Failed to delete book.");
-            }
+            if (!response.ok) throw new Error("Failed to delete book.");
+            bookItem.remove();
         })
-        .catch(error => console.error("Error deleting book:", error));
+        .catch(error => alert(`Error deleting book: ${error.message}`));
     }
 });
