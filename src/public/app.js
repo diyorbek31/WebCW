@@ -56,12 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Validation: Limit input length
-        if (book_title.length > 100 || book_author.length > 100 || book_genre.length > 100) {
-            alert("Each field must be under 100 characters.");
-            return;
-        }
-
         // Validation: Ensure author name only contains letters and spaces
         const nameRegex = /^[A-Za-z\s]+$/;
         if (!nameRegex.test(book_author)) {
